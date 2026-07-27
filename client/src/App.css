@@ -13,6 +13,10 @@
     padding-bottom: 6px !important;
     white-space: nowrap !important;
     -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .sidebar-nav::-webkit-scrollbar {
+    display: none;
   }
 
   .sidebar-nav button {
@@ -20,6 +24,8 @@
     border-bottom: 3px solid transparent !important;
     border-radius: 8px !important;
     flex-shrink: 0 !important;
+    min-height: 44px;
+    padding: 8px 16px !important;
   }
 
   .sidebar-nav button.active-tab {
@@ -38,11 +44,34 @@
 
   .modal-overlay .glass-panel {
     max-height: 90vh !important;
+    width: 100% !important;
   }
 
   .btn-primary, .btn-secondary {
     padding: 8px 14px;
     font-size: 0.85rem;
+    min-height: 44px;
   }
 }
+
+@media (max-width: 480px) {
+  div[style*="padding: 0 20px"] {
+    padding: 0 10px 20px 10px !important;
+  }
+
+  div[style*="grid-template-columns: repeat(auto-fill, minmax(320px, 1fr))"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  header.glass-panel > div {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  header.glass-panel > div > div:last-child {
+    flex-wrap: wrap !important;
+    justify-content: space-between !important;
+  }
+}
+
 
