@@ -1,0 +1,29 @@
+/* App Component Responsive Styles */
+
+@media (max-width: 900px) {
+  .app-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .desktop-only {
+    display: none !important;
+  }
+
+  .sidebar-nav {
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    padding-bottom: 6px !important;
+    white-space: nowrap !important;
+  }
+
+  .sidebar-nav button {
+    border-left: none !important;
+    border-bottom: 3px solid transparent !important;
+    border-radius: 8px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .sidebar-nav button.active-tab {
+    border-bottom: 3px solid var(--accent-cyan) !important;
+  }
+}
