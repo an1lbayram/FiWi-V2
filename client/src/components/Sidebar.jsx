@@ -14,8 +14,8 @@ export default function Sidebar({ activeTab, setActiveTab }) {
   ];
 
   return (
-    <aside className="glass-panel" style={{ padding: '16px', height: 'fit-content' }}>
-      <nav className="sidebar-nav" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+    <aside className="glass-panel sidebar-panel">
+      <nav className="sidebar-nav">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
@@ -27,7 +27,7 @@ export default function Sidebar({ activeTab, setActiveTab }) {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '12px',
+                gap: '10px',
                 padding: '12px 16px',
                 borderRadius: '12px',
                 border: 'none',
@@ -40,10 +40,11 @@ export default function Sidebar({ activeTab, setActiveTab }) {
                 transition: 'all 0.2s ease',
                 borderLeft: isActive ? '4px solid var(--accent-cyan)' : '4px solid transparent',
                 textAlign: 'left',
-                fontSize: '0.92rem'
+                fontSize: '0.92rem',
+                whiteSpace: 'nowrap'
               }}
             >
-              <Icon size={18} strokeWidth={isActive ? 2.5 : 2} />
+              <Icon size={18} strokeWidth={isActive ? 2.5 : 2} style={{ flexShrink: 0 }} />
               <span>{item.label}</span>
             </button>
           );

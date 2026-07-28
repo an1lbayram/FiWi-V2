@@ -110,7 +110,7 @@ export default function App() {
   return (
     <ThemeProvider>
       <LanguageProvider>
-        <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 20px 40px 20px' }}>
+        <div className="app-container">
           
           {/* Navbar */}
           <Navbar
@@ -122,7 +122,7 @@ export default function App() {
           />
 
           {/* Main Grid Layout */}
-          <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: '24px', alignItems: 'start' }} className="app-grid">
+          <div className="app-grid">
             
             {/* Sidebar */}
             <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />

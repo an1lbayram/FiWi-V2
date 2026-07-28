@@ -16,18 +16,18 @@ export default function QRModal({ profile, onClose }) {
 
   return (
     <div className="modal-overlay">
-      <div className="glass-panel" style={{ width: '100%', maxWidth: '420px', padding: '24px', position: 'relative', textAlign: 'center' }}>
+      <div className="glass-panel" style={{ width: '100%', maxWidth: '400px', padding: '20px', position: 'relative', textAlign: 'center', margin: 'auto' }}>
         
         <button
           onClick={onClose}
-          style={{ position: 'absolute', right: '16px', top: '16px', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
+          style={{ position: 'absolute', right: '14px', top: '14px', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '4px' }}
         >
           <X size={20} />
         </button>
 
         <div style={{
-          width: '48px',
-          height: '48px',
+          width: '46px',
+          height: '46px',
           borderRadius: '12px',
           background: 'rgba(0, 242, 254, 0.1)',
           display: 'inline-flex',
@@ -35,35 +35,36 @@ export default function QRModal({ profile, onClose }) {
           justifyContent: 'center',
           marginBottom: '12px'
         }}>
-          <QrCode size={26} color="var(--accent-cyan)" />
+          <QrCode size={24} color="var(--accent-cyan)" />
         </div>
 
-        <h3 style={{ fontSize: '1.2rem', fontWeight: '800', color: 'var(--text-main)', marginBottom: '4px' }}>
+        <h3 style={{ fontSize: '1.15rem', fontWeight: '800', color: 'var(--text-main)', marginBottom: '4px', wordBreak: 'break-all' }}>
           {profile.ssid || profile.name}
         </h3>
-        <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '20px' }}>
+        <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '18px' }}>
           {t('qrModalSub')}
         </p>
 
         {profile.qrCodeDataUrl ? (
           <div style={{
             background: '#fff',
-            padding: '16px',
+            padding: '14px',
             borderRadius: '16px',
             display: 'inline-block',
-            boxShadow: '0 0 30px rgba(0, 242, 254, 0.3)',
-            marginBottom: '20px'
+            boxShadow: '0 0 25px rgba(0, 242, 254, 0.3)',
+            marginBottom: '18px',
+            maxWidth: '100%'
           }}>
-            <img src={profile.qrCodeDataUrl} alt="Wi-Fi QR Code" style={{ width: '220px', height: '220px', display: 'block' }} />
+            <img src={profile.qrCodeDataUrl} alt="Wi-Fi QR Code" style={{ width: '200px', height: '200px', maxWidth: '100%', objectFit: 'contain', display: 'block' }} />
           </div>
         ) : (
-          <div style={{ padding: '20px', color: 'var(--accent-amber)' }}>
+          <div style={{ padding: '16px', color: 'var(--accent-amber)', fontSize: '0.85rem' }}>
             QR Code unavailable for this profile.
           </div>
         )}
 
         <div style={{ display: 'flex', justifyContent: 'center', gap: '12px' }}>
-          <button className="btn-primary" onClick={handleDownload} disabled={!profile.qrCodeDataUrl}>
+          <button className="btn-primary" onClick={handleDownload} disabled={!profile.qrCodeDataUrl} style={{ width: '100%' }}>
             <Download size={16} />
             <span>{t('downloadQR')}</span>
           </button>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import { Search, Eye, EyeOff, Copy, QrCode, Trash2, Shield, Lock, Unlock, Check } from 'lucide-react';
+import { Search, Eye, EyeOff, Copy, QrCode, Trash2, Lock, Unlock, Check } from 'lucide-react';
 
 export default function PasswordsTab({ profiles, onDeleteProfile, onOpenQR }) {
   const { t } = useLanguage();
@@ -28,10 +28,10 @@ export default function PasswordsTab({ profiles, onDeleteProfile, onOpenQR }) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       
       {/* Top Search & Summary Bar */}
-      <div className="glass-panel" style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
+      <div className="glass-panel" style={{ padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
         
         {/* Search Input */}
-        <div style={{ position: 'relative', flex: '1', minWidth: '260px' }}>
+        <div style={{ position: 'relative', flex: '1 1 220px', width: '100%' }}>
           <Search size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
           <input
             type="text"
@@ -52,26 +52,26 @@ export default function PasswordsTab({ profiles, onDeleteProfile, onOpenQR }) {
         </div>
 
         {/* Counter Badge */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: 'auto' }}>
           <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{t('totalSaved')}:</span>
           <span className="badge badge-cyan" style={{ fontSize: '0.9rem' }}>{profiles.length}</span>
         </div>
       </div>
 
       {/* Passwords Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '16px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 290px), 1fr))', gap: '16px' }}>
         {filtered.map((prof) => {
           const isVisible = visibleKeys[prof.name];
           const hasPassword = Boolean(prof.password);
           const isCopied = copiedName === prof.name;
 
           return (
-            <div key={prof.name} className="glass-panel" style={{ padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '16px' }}>
+            <div key={prof.name} className="glass-panel" style={{ padding: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '16px' }}>
               
               {/* Header */}
               <div>
                 <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '10px', marginBottom: '8px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
                     <div style={{
                       width: '38px',
                       height: '38px',
@@ -80,12 +80,13 @@ export default function PasswordsTab({ profiles, onDeleteProfile, onOpenQR }) {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      border: hasPassword ? '1px solid rgba(0, 242, 254, 0.2)' : '1px solid rgba(255, 171, 0, 0.2)'
+                      border: hasPassword ? '1px solid rgba(0, 242, 254, 0.2)' : '1px solid rgba(255, 171, 0, 0.2)',
+                      flexShrink: 0
                     }}>
                       {hasPassword ? <Lock size={18} color="var(--accent-cyan)" /> : <Unlock size={18} color="var(--accent-amber)" />}
                     </div>
-                    <div>
-                      <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--text-main)', wordBreak: 'break-all' }}>
+                    <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                      <h3 style={{ fontSize: '1rem', fontWeight: '700', color: 'var(--text-main)', wordBreak: 'break-all', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {prof.ssid || prof.name}
                       </h3>
                       <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
@@ -103,41 +104,42 @@ export default function PasswordsTab({ profiles, onDeleteProfile, onOpenQR }) {
               {/* Password Display Field */}
               <div style={{
                 background: 'var(--bg-card-inner)',
-                padding: '12px 14px',
+                padding: '10px 12px',
                 borderRadius: 'var(--radius-md)',
                 border: '1px solid var(--border-color)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                gap: '10px'
+                gap: '8px',
+                overflow: 'hidden'
               }}>
                 {hasPassword ? (
                   <>
-                    <span className="mono" style={{ fontSize: '0.95rem', letterSpacing: isVisible ? '0.5px' : '2px', color: isVisible ? 'var(--accent-cyan)' : 'var(--text-muted)' }}>
+                    <span className="mono" style={{ fontSize: '0.9rem', letterSpacing: isVisible ? '0.5px' : '2px', color: isVisible ? 'var(--accent-cyan)' : 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {isVisible ? prof.password : '••••••••••••'}
                     </span>
                     <button
                       onClick={() => toggleVisibility(prof.name)}
-                      style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
+                      style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', flexShrink: 0, padding: '4px' }}
                       title={isVisible ? t('hidePassword') : t('showPassword')}
                     >
                       {isVisible ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </>
                 ) : (
-                  <span style={{ fontSize: '0.85rem', color: 'var(--accent-amber)', italic: 'true' }}>
+                  <span style={{ fontSize: '0.85rem', color: 'var(--accent-amber)', fontStyle: 'italic' }}>
                     {t('noPassword')}
                   </span>
                 )}
               </div>
 
               {/* Card Action Buttons */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '8px', borderTop: '1px solid rgba(255, 255, 255, 0.05)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', paddingTop: '8px', borderTop: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                   {hasPassword && (
                     <button
                       className="btn-secondary"
-                      style={{ padding: '6px 12px', fontSize: '0.8rem' }}
+                      style={{ padding: '6px 10px', fontSize: '0.8rem' }}
                       onClick={() => handleCopy(prof.name, prof.password)}
                     >
                       {isCopied ? <Check size={14} color="var(--accent-green)" /> : <Copy size={14} />}
@@ -147,7 +149,7 @@ export default function PasswordsTab({ profiles, onDeleteProfile, onOpenQR }) {
 
                   <button
                     className="btn-secondary"
-                    style={{ padding: '6px 12px', fontSize: '0.8rem' }}
+                    style={{ padding: '6px 10px', fontSize: '0.8rem' }}
                     onClick={() => onOpenQR(prof)}
                   >
                     <QrCode size={14} color="var(--accent-cyan)" />
@@ -159,6 +161,7 @@ export default function PasswordsTab({ profiles, onDeleteProfile, onOpenQR }) {
                   className="btn-danger"
                   onClick={() => setDeleteTarget(prof)}
                   title={t('forgetNetwork')}
+                  style={{ marginLeft: 'auto' }}
                 >
                   <Trash2 size={14} />
                 </button>

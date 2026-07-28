@@ -1,20 +1,61 @@
+/* App Layout & Responsiveness */
+
+.app-grid {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+/* Sidebar Styling & Responsive Horizontal Navigation */
+.sidebar-panel {
+  padding: 16px;
+  height: fit-content;
+  position: sticky;
+  top: 16px;
+  z-index: 90;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Responsive Breakpoints */
+
+/* Tablet & Smaller Desktop (< 1024px) */
+@media (max-width: 1024px) {
+  .app-grid {
+    grid-template-columns: 220px 1fr;
+    gap: 16px;
+  }
+}
+
+/* Tablets & Mobile (< 900px) */
 @media (max-width: 900px) {
   .app-grid {
     grid-template-columns: 1fr !important;
+    gap: 20px;
   }
 
-  .desktop-only {
-    display: none !important;
+  .sidebar-panel {
+    position: relative;
+    top: 0;
+    padding: 12px;
+    margin-bottom: 8px;
   }
 
   .sidebar-nav {
     flex-direction: row !important;
     overflow-x: auto !important;
-    padding-bottom: 6px !important;
+    padding-bottom: 4px !important;
     white-space: nowrap !important;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
+    scroll-snap-type: x mandatory;
   }
+
   .sidebar-nav::-webkit-scrollbar {
     display: none;
   }
@@ -22,20 +63,57 @@
   .sidebar-nav button {
     border-left: none !important;
     border-bottom: 3px solid transparent !important;
-    border-radius: 8px !important;
+    border-radius: 10px !important;
     flex-shrink: 0 !important;
     min-height: 44px;
-    padding: 8px 16px !important;
+    padding: 10px 16px !important;
+    scroll-snap-align: start;
   }
 
   .sidebar-nav button.active-tab {
     border-bottom: 3px solid var(--accent-cyan) !important;
+    background: linear-gradient(180deg, rgba(0, 242, 254, 0.12), rgba(79, 172, 254, 0.12)) !important;
+  }
+
+  .desktop-only {
+    display: none !important;
   }
 }
 
-@media (max-width: 600px) {
+/* Mobile Devices (< 640px) */
+@media (max-width: 640px) {
   header.glass-panel {
     padding: 14px 16px !important;
+    border-radius: 0 0 12px 12px !important;
+  }
+
+  .navbar-container {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+
+  .navbar-brand {
+    justify-content: space-between !important;
+    width: 100% !important;
+  }
+
+  .navbar-actions {
+    flex-wrap: wrap !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    gap: 8px !important;
+  }
+
+  .navbar-actions button {
+    flex: 1 1 calc(50% - 6px);
+    min-height: 40px;
+    font-size: 0.82rem !important;
+  }
+
+  .status-badge-container {
+    width: 100%;
+    justify-content: center;
   }
 
   .modal-overlay {
@@ -43,35 +121,50 @@
   }
 
   .modal-overlay .glass-panel {
-    max-height: 90vh !important;
+    max-height: 92vh !important;
     width: 100% !important;
   }
 
   .btn-primary, .btn-secondary {
     padding: 8px 14px;
     font-size: 0.85rem;
+    min-height: 42px;
+  }
+}
+
+/* Extra Small Phones (< 480px) */
+@media (max-width: 480px) {
+  .navbar-brand-text h1 {
+    font-size: 1.15rem !important;
+  }
+
+  .navbar-brand-text p {
+    font-size: 0.72rem !important;
+  }
+
+  .navbar-actions button {
+    flex: 1 1 100%;
     min-height: 44px;
   }
-}
 
-@media (max-width: 480px) {
-  div[style*="padding: 0 20px"] {
-    padding: 0 10px 20px 10px !important;
+  .sidebar-nav button {
+    padding: 8px 12px !important;
+    font-size: 0.85rem !important;
   }
 
-  div[style*="grid-template-columns: repeat(auto-fill, minmax(320px, 1fr))"] {
-    grid-template-columns: 1fr !important;
-  }
-
-  header.glass-panel > div {
-    flex-direction: column !important;
-    align-items: stretch !important;
-  }
-
-  header.glass-panel > div > div:last-child {
-    flex-wrap: wrap !important;
-    justify-content: space-between !important;
+  .modal-overlay .glass-panel {
+    padding: 16px !important;
   }
 }
 
+/* Ultra Small Phones (< 360px) */
+@media (max-width: 360px) {
+  .app-container {
+    padding: 0 4px 12px 4px;
+  }
 
+  .badge {
+    font-size: 0.7rem;
+    padding: 3px 6px;
+  }
+}

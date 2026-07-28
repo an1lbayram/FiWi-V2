@@ -8,11 +8,11 @@ export default function Navbar({ activeConn, onRefresh, onFullScan, onExport, on
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <header className="glass-panel" style={{ borderRadius: '0 0 16px 16px', marginBottom: '24px', padding: '16px 28px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
+    <header className="glass-panel" style={{ borderRadius: '0 0 16px 16px', marginBottom: '24px', padding: '16px 24px' }}>
+      <div className="navbar-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
         
-        {/* Brand */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+        {/* Brand Header */}
+        <div className="navbar-brand" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <div style={{
             width: '46px',
             height: '46px',
@@ -21,15 +21,16 @@ export default function Navbar({ activeConn, onRefresh, onFullScan, onExport, on
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: 'var(--shadow-glow)'
+            boxShadow: 'var(--shadow-glow)',
+            flexShrink: 0
           }}>
             <Wifi size={26} color="#ffffff" strokeWidth={2.5} />
           </div>
-          <div>
-            <h1 style={{ fontSize: '1.4rem', fontWeight: '800', letterSpacing: '-0.5px', background: 'var(--gradient-heading)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+          <div className="navbar-brand-text">
+            <h1 style={{ fontSize: 'clamp(1.1rem, 2vw, 1.4rem)', fontWeight: '800', letterSpacing: '-0.5px', background: 'var(--gradient-heading)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
               {t('appTitle')}
             </h1>
-            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: '500', marginBottom: '4px' }}>
+            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: '500', marginBottom: '4px' }}>
               {t('subTitle')}
             </p>
             <a
@@ -40,7 +41,7 @@ export default function Navbar({ activeConn, onRefresh, onFullScan, onExport, on
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '4px',
-                fontSize: '0.75rem',
+                fontSize: '0.72rem',
                 fontWeight: '700',
                 color: 'var(--accent-cyan)',
                 textDecoration: 'none',
@@ -66,26 +67,36 @@ export default function Navbar({ activeConn, onRefresh, onFullScan, onExport, on
         </div>
 
         {/* Live Status Badge */}
-        <div style={{
+        <div className="status-badge-container" style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '10px',
-          padding: '8px 16px',
+          gap: '8px',
+          padding: '8px 14px',
           background: 'var(--bg-card-inner)',
           borderRadius: '20px',
-          border: '1px solid var(--border-color)'
+          border: '1px solid var(--border-color)',
+          maxWidth: '100%',
+          overflow: 'hidden'
         }}>
           <span className="live-dot" style={{ backgroundColor: activeConn?.connected ? 'var(--accent-green)' : 'var(--accent-red)' }} />
-          <span style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-muted)' }}>
+          <span style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
             {t('connectedAs')}:
           </span>
-          <span style={{ fontSize: '0.9rem', fontWeight: '700', color: activeConn?.connected ? 'var(--accent-cyan)' : 'var(--text-muted)' }}>
+          <span style={{
+            fontSize: '0.85rem',
+            fontWeight: '700',
+            color: activeConn?.connected ? 'var(--accent-cyan)' : 'var(--text-muted)',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            maxWidth: '160px'
+          }}>
             {activeConn?.connected ? activeConn.ssid : t('notConnected')}
           </span>
         </div>
 
         {/* Action Controls */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <div className="navbar-actions" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
           <button className="btn-secondary" onClick={onRefresh} title={t('refresh')}>
             <RefreshCw size={16} />
             <span>{t('refresh')}</span>
@@ -96,16 +107,14 @@ export default function Navbar({ activeConn, onRefresh, onFullScan, onExport, on
             <span>{t('fullAudit')}</span>
           </button>
 
-          <div style={{ position: 'relative' }}>
-            <button
-              className="btn-secondary"
-              onClick={() => onExport('json')}
-              title={t('exportData')}
-            >
-              <Download size={16} />
-              <span className="desktop-only">JSON Export</span>
-            </button>
-          </div>
+          <button
+            className="btn-secondary"
+            onClick={() => onExport('json')}
+            title={t('exportData')}
+          >
+            <Download size={16} />
+            <span className="desktop-only">JSON Export</span>
+          </button>
 
           <button
             className="btn-secondary"
