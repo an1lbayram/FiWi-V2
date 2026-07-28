@@ -82,6 +82,60 @@ export default function NetworkDevicesTab({ devicesData }) {
         </div>
       </div>
 
+      {/* Mobile Device Cards View (< 640px) */}
+      <div className="mobile-device-cards">
+        {devices.map((dev, idx) => {
+          const IconComponent = getDeviceIcon(dev.vendor);
+          return (
+            <div key={idx} className="glass-panel" style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+                  <div style={{
+                    width: '38px',
+                    height: '38px',
+                    borderRadius: '10px',
+                    background: 'rgba(0, 242, 254, 0.12)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'var(--accent-cyan)',
+                    border: '1px solid var(--border-color)',
+                    flexShrink: 0
+                  }}>
+                    <IconComponent size={18} />
+                  </div>
+                  <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                    <h4 style={{ fontSize: '0.95rem', fontWeight: '700', color: 'var(--text-main)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                      {dev.vendor}
+                    </h4>
+                    <span className="mono" style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                      MAC: {dev.mac}
+                    </span>
+                  </div>
+                </div>
+                <span className="badge badge-cyan">{dev.type}</span>
+              </div>
+
+              <div style={{
+                background: 'var(--bg-card-inner)',
+                padding: '8px 12px',
+                borderRadius: '8px',
+                border: '1px solid var(--border-color)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+              }}>
+                <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{t('deviceIp')}:</span>
+                <span className="mono" style={{ fontSize: '0.88rem', fontWeight: '700', color: 'var(--accent-cyan)' }}>
+                  {dev.ip}
+                </span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
     </div>
   );
 }
+

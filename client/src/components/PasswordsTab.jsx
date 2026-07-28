@@ -59,7 +59,7 @@ export default function PasswordsTab({ profiles, onDeleteProfile, onOpenQR }) {
       </div>
 
       {/* Passwords Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 290px), 1fr))', gap: '16px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 270px), 1fr))', gap: '16px' }}>
         {filtered.map((prof) => {
           const isVisible = visibleKeys[prof.name];
           const hasPassword = Boolean(prof.password);

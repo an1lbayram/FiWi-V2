@@ -85,7 +85,7 @@ export default function ActiveStatusTab({ activeConn, socket }) {
       </div>
 
       {/* Grid of Key Wi-Fi Parameters */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 160px), 1fr))', gap: '14px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 135px), 1fr))', gap: '12px' }}>
         
         <div className="glass-panel" style={{ padding: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
           <Signal color="var(--accent-cyan)" size={22} style={{ flexShrink: 0 }} />

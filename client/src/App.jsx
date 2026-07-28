@@ -157,8 +157,17 @@ export default function App() {
           </div>
 
           {/* Footer */}
-          <footer className="glass-panel" style={{ marginTop: '40px', padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
-            <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+          <footer className="glass-panel" style={{
+            marginTop: '40px',
+            padding: '16px 20px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '12px',
+            textAlign: 'center'
+          }}>
+            <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', flex: '1 1 240px', textAlign: 'left' }}>
               FiWi V2 © 2026 — Web Based Wi-Fi & Network Intelligence Manager
             </span>
             <a
@@ -169,7 +178,7 @@ export default function App() {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '6px',
-                fontSize: '0.85rem',
+                fontSize: '0.82rem',
                 fontWeight: '700',
                 color: 'var(--accent-cyan)',
                 textDecoration: 'none',
@@ -178,7 +187,8 @@ export default function App() {
                 padding: '6px 14px',
                 borderRadius: 'var(--radius-md)',
                 transition: 'all 0.2s ease',
-                fontFamily: 'var(--font-mono)'
+                fontFamily: 'var(--font-mono)',
+                margin: '0 auto'
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.background = 'rgba(0, 242, 254, 0.25)';

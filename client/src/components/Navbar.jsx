@@ -1,65 +1,33 @@
 import React from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
-import { Wifi, RefreshCw, Terminal, Download, ShieldCheck, Globe, Sun, Moon } from 'lucide-react';
+import { Wifi, RefreshCw, Terminal, Download, ShieldCheck, Globe, Sun, Moon, FileSpreadsheet, FileJson } from 'lucide-react';
 
 export default function Navbar({ activeConn, onRefresh, onFullScan, onExport, onToggleTerminal }) {
   const { lang, toggleLanguage, t } = useLanguage();
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <header className="glass-panel" style={{ borderRadius: '0 0 16px 16px', marginBottom: '24px', padding: '16px 24px' }}>
-      <div className="navbar-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
+    <header className="glass-panel navbar-header">
+      <div className="navbar-container">
         
         {/* Brand Header */}
-        <div className="navbar-brand" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{
-            width: '46px',
-            height: '46px',
-            borderRadius: '12px',
-            background: 'var(--gradient-brand)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: 'var(--shadow-glow)',
-            flexShrink: 0
-          }}>
-            <Wifi size={26} color="#ffffff" strokeWidth={2.5} />
+        <div className="navbar-brand">
+          <div className="navbar-brand-icon">
+            <Wifi size={24} color="#ffffff" strokeWidth={2.5} />
           </div>
           <div className="navbar-brand-text">
-            <h1 style={{ fontSize: 'clamp(1.1rem, 2vw, 1.4rem)', fontWeight: '800', letterSpacing: '-0.5px', background: 'var(--gradient-heading)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            <h1 className="navbar-title">
               {t('appTitle')}
             </h1>
-            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: '500', marginBottom: '4px' }}>
+            <p className="navbar-subtitle">
               {t('subTitle')}
             </p>
             <a
               href="https://an1lbayram-github-io.vercel.app/"
               target="_blank"
               rel="noopener noreferrer"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '4px',
-                fontSize: '0.72rem',
-                fontWeight: '700',
-                color: 'var(--accent-cyan)',
-                textDecoration: 'none',
-                background: 'var(--badge-cyan-bg, rgba(0, 242, 254, 0.08))',
-                border: '1px solid var(--border-color)',
-                padding: '2px 8px',
-                borderRadius: '6px',
-                transition: 'all 0.2s ease',
-                fontFamily: 'var(--font-mono)'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'var(--border-color)';
-                e.currentTarget.style.borderColor = 'var(--accent-cyan)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'var(--badge-cyan-bg, rgba(0, 242, 254, 0.08))';
-                e.currentTarget.style.borderColor = 'var(--border-color)';
-              }}
+              className="navbar-author-link"
             >
               &lt;/&gt; Created by an1lbayram
             </a>
@@ -67,93 +35,84 @@ export default function Navbar({ activeConn, onRefresh, onFullScan, onExport, on
         </div>
 
         {/* Live Status Badge */}
-        <div className="status-badge-container" style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          padding: '8px 14px',
-          background: 'var(--bg-card-inner)',
-          borderRadius: '20px',
-          border: '1px solid var(--border-color)',
-          maxWidth: '100%',
-          overflow: 'hidden'
-        }}>
+        <div className="status-badge-container">
           <span className="live-dot" style={{ backgroundColor: activeConn?.connected ? 'var(--accent-green)' : 'var(--accent-red)' }} />
-          <span style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+          <span className="status-label">
             {t('connectedAs')}:
           </span>
-          <span style={{
-            fontSize: '0.85rem',
-            fontWeight: '700',
-            color: activeConn?.connected ? 'var(--accent-cyan)' : 'var(--text-muted)',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-            maxWidth: '160px'
-          }}>
+          <span className="status-value" style={{ color: activeConn?.connected ? 'var(--accent-cyan)' : 'var(--text-muted)' }}>
             {activeConn?.connected ? activeConn.ssid : t('notConnected')}
           </span>
         </div>
 
         {/* Action Controls */}
-        <div className="navbar-actions" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-          <button className="btn-secondary" onClick={onRefresh} title={t('refresh')}>
-            <RefreshCw size={16} />
-            <span>{t('refresh')}</span>
-          </button>
+        <div className="navbar-actions">
+          
+          {/* Main Action CTAs */}
+          <div className="navbar-primary-actions">
+            <button className="btn-secondary flex-1" onClick={onRefresh} title={t('refresh')}>
+              <RefreshCw size={16} />
+              <span>{t('refresh')}</span>
+            </button>
 
-          <button className="btn-primary" onClick={onFullScan} title={t('fullAudit')}>
-            <ShieldCheck size={16} />
-            <span>{t('fullAudit')}</span>
-          </button>
+            <button className="btn-primary flex-1" onClick={onFullScan} title={t('fullAudit')}>
+              <ShieldCheck size={16} />
+              <span>{t('fullAudit')}</span>
+            </button>
+          </div>
 
-          <button
-            className="btn-secondary"
-            onClick={() => onExport('json')}
-            title={t('exportData')}
-          >
-            <Download size={16} />
-            <span className="desktop-only">JSON Export</span>
-          </button>
+          {/* Utility Toolbar Icons */}
+          <div className="navbar-secondary-actions">
+            <button
+              className="btn-secondary icon-btn"
+              onClick={() => onExport('json')}
+              title={t('exportData') + ' (JSON)'}
+            >
+              <FileJson size={16} color="var(--accent-cyan)" />
+              <span className="desktop-only">JSON</span>
+            </button>
 
-          <button
-            className="btn-secondary"
-            onClick={() => onExport('csv')}
-            title="Export CSV Passwords"
-          >
-            <Download size={16} color="var(--accent-green)" />
-            <span className="desktop-only">CSV Export</span>
-          </button>
+            <button
+              className="btn-secondary icon-btn"
+              onClick={() => onExport('csv')}
+              title="Export CSV Passwords"
+            >
+              <FileSpreadsheet size={16} color="var(--accent-green)" />
+              <span className="desktop-only">CSV</span>
+            </button>
 
-          <button className="btn-secondary" onClick={onToggleTerminal} title={t('terminalLog')}>
-            <Terminal size={16} />
-          </button>
+            <button className="btn-secondary icon-btn" onClick={onToggleTerminal} title={t('terminalLog')}>
+              <Terminal size={16} color="var(--text-main)" />
+              <span className="desktop-only">{t('terminalLog')}</span>
+            </button>
 
-          {/* Theme Switcher Button */}
-          <button
-            className="btn-secondary"
-            onClick={toggleTheme}
-            title={theme === 'dark' ? t('lightMode') : t('darkMode')}
-            style={{ gap: '6px' }}
-          >
-            {theme === 'dark' ? (
-              <Sun size={16} color="var(--accent-amber)" />
-            ) : (
-              <Moon size={16} color="var(--accent-purple)" />
-            )}
-            <span style={{ fontWeight: '700' }} className="desktop-only">
-              {theme === 'dark' ? t('lightMode') : t('darkMode')}
-            </span>
-          </button>
+            {/* Theme Switcher */}
+            <button
+              className="btn-secondary icon-btn"
+              onClick={toggleTheme}
+              title={theme === 'dark' ? t('lightMode') : t('darkMode')}
+            >
+              {theme === 'dark' ? (
+                <Sun size={16} color="var(--accent-amber)" />
+              ) : (
+                <Moon size={16} color="var(--accent-purple)" />
+              )}
+              <span className="desktop-only">
+                {theme === 'dark' ? t('lightMode') : t('darkMode')}
+              </span>
+            </button>
 
-          {/* Language Switcher */}
-          <button className="btn-secondary" onClick={toggleLanguage} style={{ gap: '6px' }}>
-            <Globe size={16} color="var(--accent-cyan)" />
-            <span style={{ fontWeight: '800' }}>{lang}</span>
-          </button>
+            {/* Language Switcher */}
+            <button className="btn-secondary icon-btn" onClick={toggleLanguage} title="Switch Language">
+              <Globe size={16} color="var(--accent-cyan)" />
+              <span style={{ fontWeight: '800' }}>{lang}</span>
+            </button>
+          </div>
+
         </div>
 
       </div>
     </header>
   );
 }
+
