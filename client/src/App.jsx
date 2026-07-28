@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { io } from 'socket.io-client';
 
 import { ThemeProvider } from './context/ThemeContext';
@@ -218,6 +219,7 @@ export default function App() {
             />
           )}
 
+          <Analytics />
         </div>
       </LanguageProvider>
     </ThemeProvider>
