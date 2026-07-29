@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
-import { Wifi, RefreshCw, Terminal, Download, ShieldCheck, Globe, Sun, Moon, FileSpreadsheet, FileJson } from 'lucide-react';
+import { Wifi, RefreshCw, Terminal, ShieldCheck, Globe, Sun, Moon, FileSpreadsheet, FileJson } from 'lucide-react';
 
 export default function Navbar({ activeConn, onRefresh, onFullScan, onExport, onToggleTerminal }) {
   const { lang, toggleLanguage, t } = useLanguage();
@@ -51,13 +51,13 @@ export default function Navbar({ activeConn, onRefresh, onFullScan, onExport, on
           {/* Main Action CTAs */}
           <div className="navbar-primary-actions">
             <button className="btn-secondary flex-1" onClick={onRefresh} title={t('refresh')}>
-              <RefreshCw size={16} />
-              <span>{t('refresh')}</span>
+              <RefreshCw size={15} style={{ flexShrink: 0 }} />
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t('refresh')}</span>
             </button>
 
             <button className="btn-primary flex-1" onClick={onFullScan} title={t('fullAudit')}>
-              <ShieldCheck size={16} />
-              <span>{t('fullAudit')}</span>
+              <ShieldCheck size={15} style={{ flexShrink: 0 }} />
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t('fullAudit')}</span>
             </button>
           </div>
 
@@ -105,7 +105,7 @@ export default function Navbar({ activeConn, onRefresh, onFullScan, onExport, on
             {/* Language Switcher */}
             <button className="btn-secondary icon-btn" onClick={toggleLanguage} title="Switch Language">
               <Globe size={16} color="var(--accent-cyan)" />
-              <span style={{ fontWeight: '800' }}>{lang}</span>
+              <span style={{ fontWeight: '800', fontSize: '0.8rem' }}>{lang}</span>
             </button>
           </div>
 
@@ -115,4 +115,5 @@ export default function Navbar({ activeConn, onRefresh, onFullScan, onExport, on
     </header>
   );
 }
+
 

@@ -27,8 +27,8 @@ export default function Sidebar({ activeTab, setActiveTab }) {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '10px',
-                padding: '12px 16px',
+                gap: '8px',
+                padding: '10px 14px',
                 borderRadius: '12px',
                 border: 'none',
                 background: isActive
@@ -38,9 +38,8 @@ export default function Sidebar({ activeTab, setActiveTab }) {
                 fontWeight: isActive ? '700' : '500',
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
-                borderLeft: isActive ? '4px solid var(--accent-cyan)' : '4px solid transparent',
                 textAlign: 'left',
-                fontSize: '0.92rem',
+                fontSize: '0.88rem',
                 whiteSpace: 'nowrap'
               }}
             >
@@ -53,3 +52,4 @@ export default function Sidebar({ activeTab, setActiveTab }) {
     </aside>
   );
 }
+

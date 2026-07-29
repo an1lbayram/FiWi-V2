@@ -1,5 +1,13 @@
 /* App Layout & Responsiveness */
 
+.app-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px 40px 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .app-grid {
   display: grid;
   grid-template-columns: 260px 1fr;
@@ -7,7 +15,7 @@
   align-items: start;
 }
 
-/* Sidebar Styling & Responsive Horizontal Navigation */
+/* Sidebar Styling & Responsive Navigation */
 .sidebar-panel {
   padding: 16px;
   height: fit-content;
@@ -27,6 +35,8 @@
   border-radius: 0 0 16px 16px;
   margin-bottom: 24px;
   padding: 16px 24px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .navbar-container {
@@ -41,6 +51,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  min-width: 0;
 }
 
 .navbar-brand-icon {
@@ -55,6 +66,13 @@
   flex-shrink: 0;
 }
 
+.navbar-brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
 .navbar-title {
   font-size: clamp(1.15rem, 2vw, 1.45rem);
   font-weight: 800;
@@ -62,13 +80,16 @@
   background: var(--gradient-heading);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  white-space: nowrap;
 }
 
 .navbar-subtitle {
   font-size: 0.78rem;
   color: var(--text-muted);
   font-weight: 500;
-  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .navbar-author-link {
@@ -85,6 +106,8 @@
   border-radius: 6px;
   transition: all 0.2s ease;
   font-family: var(--font-mono);
+  width: fit-content;
+  margin-top: 2px;
 }
 
 .navbar-author-link:hover {
@@ -101,7 +124,7 @@
   border-radius: 20px;
   border: 1px solid var(--border-color);
   max-width: 100%;
-  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .status-label {
@@ -109,6 +132,7 @@
   font-weight: 600;
   color: var(--text-muted);
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .status-value {
@@ -123,7 +147,7 @@
 .navbar-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
@@ -162,37 +186,49 @@
   }
 }
 
-/* Tablet Layout (< 900px) */
+/* Tablet & Mobile Layout (< 900px) */
 @media (max-width: 900px) {
   .app-grid {
     grid-template-columns: 1fr !important;
-    gap: 20px;
+    gap: 16px;
   }
 
   .sidebar-panel {
     position: sticky;
     top: 10px;
-    padding: 8px 10px;
+    padding: 8px;
     margin-bottom: 12px;
     border-radius: 14px;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     background: var(--bg-card);
+    overflow: hidden;
   }
 
   .sidebar-nav {
     flex-direction: row !important;
     overflow-x: auto !important;
-    padding: 2px 2px 6px 2px !important;
+    padding: 4px 2px 8px 2px !important;
     gap: 8px !important;
     white-space: nowrap !important;
     -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
     scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 242, 254, 0.4) transparent;
   }
 
   .sidebar-nav::-webkit-scrollbar {
-    display: none;
+    height: 4px;
+    display: block;
+  }
+
+  .sidebar-nav::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .sidebar-nav::-webkit-scrollbar-thumb {
+    background: rgba(0, 242, 254, 0.3);
+    border-radius: 4px;
   }
 
   .sidebar-nav button {
@@ -200,9 +236,10 @@
     border-bottom: 3px solid transparent !important;
     border-radius: 10px !important;
     flex-shrink: 0 !important;
-    min-height: 44px;
-    padding: 10px 14px !important;
+    min-height: 42px;
+    padding: 8px 14px !important;
     scroll-snap-align: start;
+    font-size: 0.85rem !important;
   }
 
   .sidebar-nav button.active-tab {
@@ -217,8 +254,12 @@
 
 /* Mobile Devices (< 640px) */
 @media (max-width: 640px) {
+  .app-container {
+    padding: 0 12px 24px 12px;
+  }
+
   .navbar-header {
-    padding: 14px 16px;
+    padding: 14px;
     border-radius: 0 0 14px 14px;
     margin-bottom: 16px;
   }
@@ -226,12 +267,17 @@
   .navbar-container {
     flex-direction: column;
     align-items: stretch;
-    gap: 14px;
+    gap: 12px;
   }
 
   .navbar-brand {
-    justify-content: space-between;
+    justify-content: flex-start;
     width: 100%;
+    gap: 10px;
+  }
+
+  .navbar-subtitle {
+    display: none;
   }
 
   .status-badge-container {
@@ -241,27 +287,28 @@
   }
 
   .status-value {
-    max-width: 220px;
+    max-width: 200px;
   }
 
   .navbar-actions {
     flex-direction: column;
     width: 100%;
-    gap: 10px;
+    gap: 8px;
   }
 
   .navbar-primary-actions {
     width: 100%;
     display: grid;
-    grid-template-columns: 1fr 1.2fr;
+    grid-template-columns: 1fr 1fr;
     gap: 8px;
   }
 
   .navbar-primary-actions button {
     width: 100%;
-    min-height: 42px;
-    padding: 8px 12px;
-    font-size: 0.85rem;
+    min-height: 40px;
+    padding: 8px 10px;
+    font-size: 0.82rem;
+    justify-content: center;
   }
 
   .navbar-secondary-actions {
@@ -273,8 +320,8 @@
 
   .navbar-secondary-actions .icon-btn {
     flex: 1;
-    min-height: 40px;
-    padding: 8px;
+    min-height: 38px;
+    padding: 6px 4px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -291,7 +338,7 @@
   }
 
   .modal-overlay {
-    padding: 12px !important;
+    padding: 10px !important;
   }
 
   .modal-overlay .glass-panel {
@@ -301,31 +348,36 @@
 
   .btn-primary, .btn-secondary {
     padding: 8px 12px;
-    font-size: 0.85rem;
+    font-size: 0.84rem;
   }
 }
 
-/* Small Phones (< 480px) */
+/* Small Mobile Phones (< 480px) */
 @media (max-width: 480px) {
-  .navbar-title {
-    font-size: 1.1rem;
+  .app-container {
+    padding: 0 8px 16px 8px;
   }
 
-  .navbar-subtitle {
-    font-size: 0.72rem;
+  .navbar-header {
+    padding: 12px 10px;
+  }
+
+  .navbar-title {
+    font-size: 1.15rem;
   }
 
   .sidebar-nav button {
-    padding: 8px 12px !important;
-    font-size: 0.82rem !important;
+    padding: 8px 10px !important;
+    font-size: 0.8rem !important;
+    gap: 6px !important;
   }
 
   .modal-overlay .glass-panel {
-    padding: 16px !important;
+    padding: 14px !important;
   }
 }
 
-/* Extra Small Phones (< 360px) */
+/* Extra Small Mobile Phones (< 360px) */
 @media (max-width: 360px) {
   .app-container {
     padding: 0 4px 12px 4px;
@@ -340,4 +392,5 @@
     padding: 3px 6px;
   }
 }
+
 
