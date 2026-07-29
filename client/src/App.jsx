@@ -16,6 +16,31 @@ import TerminalModal from './components/TerminalModal';
 
 import './App.css';
 
+// Local server auth token (see server/index.js). The server prints/writes a
+// fresh random token on every start and requires it (as the X-DatHex-Token
+// header, or `auth.token` on the socket handshake) for any endpoint that can
+// return saved Wi-Fi passwords or delete a profile.
+//
+// TODO: there is no UI yet to enter/store this token. Until one exists, a
+// user who wants password-related tabs to work must manually run in the
+// browser devtools console:
+//   localStorage.setItem('fiwi_token', '<token printed by the server>')
+// and reload. Without it, /api/profiles, /api/profiles/:name,
+// /api/profiles/delete, /api/export, /api/export/csv and the socket
+// 'run-full-scan' flow will fail with 401 / a socket connect_error.
+function getAuthToken() {
+  try {
+    return localStorage.getItem('fiwi_token') || '';
+  } catch (e) {
+    return '';
+  }
+}
+
+function authHeaders() {
+  const token = getAuthToken();
+  return token ? { 'X-DatHex-Token': token } : {};
+}
+
 export default function App() {
   const [socket, setSocket] = useState(null);
   const [activeTab, setActiveTab] = useState('passwords');
@@ -31,7 +56,11 @@ export default function App() {
   const [selectedQRProfile, setSelectedQRProfile] = useState(null);
 
   useEffect(() => {
-    const newSocket = io('http://localhost:3002');
+    // Use the page's own origin instead of a hard-coded localhost:3002 so
+    // this keeps working if the app is ever served from another port/host.
+    const newSocket = io(window.location.origin, {
+      auth: { token: getAuthToken() }
+    });
     setSocket(newSocket);
 
     newSocket.on('log', (logObj) => {
@@ -55,7 +84,7 @@ export default function App() {
       const q = force ? '?force=true' : '';
       
       const [resProf, resAct, resNear, resDev, resAud] = await Promise.all([
-        fetch(`/api/profiles${q}`).then(r => r.json()),
+        fetch(`/api/profiles${q}`, { headers: authHeaders() }).then(r => r.json()),
         fetch(`/api/active`).then(r => r.json()),
         fetch(`/api/nearby${q}`).then(r => r.json()),
         fetch(`/api/devices`).then(r => r.json()),
@@ -87,7 +116,7 @@ export default function App() {
     try {
       const res = await fetch('/api/profiles/delete', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
         body: JSON.stringify({ name })
       }).then(r => r.json());
 
@@ -100,11 +129,30 @@ export default function App() {
     }
   };
 
-  const handleExport = (type = 'json') => {
-    if (type === 'csv') {
-      window.location.href = '/api/export/csv';
-    } else {
-      window.location.href = '/api/export';
+  const handleExport = async (type = 'json') => {
+    // These endpoints require the local auth token, and a plain navigation
+    // (window.location.href) can't attach a custom header — so fetch the
+    // file with the token and trigger a download from the resulting blob.
+    const url = type === 'csv' ? '/api/export/csv' : '/api/export';
+    const filename = type === 'csv' ? 'fiwi-v2-passwords.csv' : 'fiwi-v2-export.json';
+
+    try {
+      const res = await fetch(url, { headers: authHeaders() });
+      if (!res.ok) {
+        console.error('Export failed:', res.status, await res.text());
+        return;
+      }
+      const blob = await res.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = objectUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(objectUrl);
+    } catch (e) {
+      console.error('Failed to export:', e);
     }
   };
 

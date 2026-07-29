@@ -1,8 +1,10 @@
-const { exec, spawn } = require('child_process');
+const { exec, execFile } = require('child_process');
 const qrcode = require('qrcode');
 
 /**
- * Execute PowerShell command with UTF-8 encoding support
+ * Execute PowerShell command with UTF-8 encoding support.
+ * Only ever used with fixed, hard-coded command strings (no user input
+ * concatenated in) — safe by construction.
  */
 function execPowerShell(command, options = {}) {
   return new Promise((resolve, reject) => {
@@ -13,6 +15,41 @@ function execPowerShell(command, options = {}) {
       }
       resolve({ stdout: stdout || '', stderr: stderr || '', error: null });
     });
+  });
+}
+
+/**
+ * Execute a PowerShell command that needs to embed user-controlled values
+ * (e.g. a Wi-Fi profile name) WITHOUT ever string-concatenating that value
+ * into the command line.
+ *
+ * How it stays safe:
+ *  - Uses execFile (no cmd.exe/shell involved at all), so shell metacharacters
+ *    like & | % ^ can never be interpreted.
+ *  - The PowerShell command text itself is fixed/hard-coded and passed via
+ *    -EncodedCommand (base64 UTF-16LE), so there is no outer-quoting to
+ *    escape and no injection surface in the command string.
+ *  - User-controlled values are passed to the PowerShell process as
+ *    environment variables and referenced inside the script via $env:NAME,
+ *    so PowerShell treats them purely as data, never as script syntax.
+ */
+function execPowerShellSafe(command, envVars = {}, options = {}) {
+  return new Promise((resolve) => {
+    const fullCmd = `[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; ${command}`;
+    const encoded = Buffer.from(fullCmd, 'utf16le').toString('base64');
+    const env = { ...process.env, ...envVars };
+
+    execFile(
+      'powershell.exe',
+      ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-EncodedCommand', encoded],
+      { encoding: 'utf8', maxBuffer: 1024 * 1024 * 10, env, ...options },
+      (error, stdout, stderr) => {
+        if (error && !stdout) {
+          return resolve({ error: error.message, stdout: '', stderr });
+        }
+        resolve({ stdout: stdout || '', stderr: stderr || '', error: null });
+      }
+    );
   });
 }
 
@@ -62,9 +99,14 @@ async function getSavedProfiles() {
  * Get details & cleartext password for a specific saved Wi-Fi profile
  */
 async function getProfileDetails(profileName) {
-  // Escape double quotes and backslashes for PowerShell safety
-  const safeName = profileName.replace(/["`$\\]/g, '`$&');
-  const { stdout, error } = await execPowerShell(`netsh wlan show profile name="${safeName}" key=clear`);
+  // profileName is untrusted (comes from the client). It is never
+  // concatenated into a command string — it's passed as an environment
+  // variable and referenced via $env:FIWI_PROFILE_NAME, so it can't break out
+  // of the netsh argument or be interpreted as PowerShell/shell syntax.
+  const { stdout, error } = await execPowerShellSafe(
+    '& netsh wlan show profile name=$env:FIWI_PROFILE_NAME key=clear',
+    { FIWI_PROFILE_NAME: profileName }
+  );
 
   if (error && !stdout) {
     return { success: false, error: error };
@@ -171,8 +213,12 @@ async function getAllSavedProfilesDetails() {
  * Forget/Delete a Wi-Fi profile
  */
 async function deleteProfile(profileName) {
-  const safeName = profileName.replace(/["`$\\]/g, '`$&');
-  const { stdout, error } = await execPowerShell(`netsh wlan delete profile name="${safeName}"`);
+  // Same untrusted-input handling as getProfileDetails: passed via env var,
+  // never string-concatenated into the command.
+  const { stdout, error } = await execPowerShellSafe(
+    '& netsh wlan delete profile name=$env:FIWI_PROFILE_NAME',
+    { FIWI_PROFILE_NAME: profileName }
+  );
   if (error && !stdout) {
     return { success: false, message: error };
   }
@@ -491,16 +537,25 @@ function lookupMacVendor(mac) {
 /**
  * Ping host to measure real-time latency
  */
-async function pingHost(host = '8.8.8.8') {
-  const safeHost = host.replace(/[^a-zA-Z0-9.-]/g, '');
-  const { stdout } = await execPowerShell(`Test-Connection -ComputerName "${safeHost}" -Count 1 | Select-Object -ExpandProperty ResponseTime`);
-  
-  const pingMs = parseInt(stdout.trim(), 10);
-  return {
-    host,
-    latency: isNaN(pingMs) ? null : pingMs,
-    online: !isNaN(pingMs)
-  };
+function pingHost(host = '8.8.8.8') {
+  // Defense in depth: strip anything that isn't a valid hostname/IP
+  // character. Not strictly required for injection safety anymore (execFile
+  // below never goes through a shell and takes args as an array), but keeps
+  // the target sane.
+  const safeHost = String(host).replace(/[^a-zA-Z0-9.-]/g, '');
+
+  return new Promise((resolve) => {
+    execFile('ping', ['-n', '1', '-w', '2000', safeHost], { encoding: 'utf8' }, (error, stdout) => {
+      const out = stdout || '';
+      const match = out.match(/(?:time|süre)[=<]\s*(\d+)\s*ms/i);
+      const pingMs = match ? parseInt(match[1], 10) : NaN;
+      resolve({
+        host,
+        latency: isNaN(pingMs) ? null : pingMs,
+        online: !isNaN(pingMs)
+      });
+    });
+  });
 }
 
 /**

@@ -7,9 +7,9 @@ const path = require('path');
 const notifier = require('node-notifier');
 const cron = require('node-cron');
 const fs = require('fs');
+const crypto = require('crypto');
 
 const {
-  getSavedProfiles,
   getProfileDetails,
   getAllSavedProfilesDetails,
   deleteProfile,
@@ -21,16 +21,40 @@ const {
   exportProfilesToCSV
 } = require('./wifiService');
 
+// Allowed browser origin for CORS. Override via ALLOWED_ORIGIN env var if the
+// client is served from somewhere other than the Vite dev server default.
+const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || 'http://localhost:5173';
+
+// Local-only auth token: generated fresh on every server start and required
+// (via the X-DatHex-Token header) on endpoints that can return Wi-Fi passwords
+// or mutate saved profiles. Printed to the console and written to a
+// gitignored file so a local client/tool can read it.
+const AUTH_TOKEN = crypto.randomBytes(24).toString('hex');
+const TOKEN_FILE = path.join(__dirname, '.local-token');
+try {
+  fs.writeFileSync(TOKEN_FILE, AUTH_TOKEN, { encoding: 'utf8', mode: 0o600 });
+} catch (e) {
+  console.warn('[WARN] Could not write local token file:', e.message);
+}
+
+function requireLocalToken(req, res, next) {
+  const provided = req.get('X-DatHex-Token');
+  if (!provided || provided !== AUTH_TOKEN) {
+    return res.status(401).json({ success: false, error: 'Unauthorized: missing or invalid X-DatHex-Token header' });
+  }
+  next();
+}
+
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: '*',
+    origin: ALLOWED_ORIGIN,
     methods: ['GET', 'POST']
   }
 });
 
-app.use(cors());
+app.use(cors({ origin: ALLOWED_ORIGIN }));
 app.use(helmet({
   contentSecurityPolicy: false,
 }));
@@ -50,7 +74,7 @@ const cache = {
 const CACHE_TTL = 15 * 1000; // 15 seconds cache
 
 // GET /api/profiles - Fetch all saved Wi-Fi profiles with details & passwords
-app.get('/api/profiles', async (req, res) => {
+app.get('/api/profiles', requireLocalToken, async (req, res) => {
   const force = req.query.force === 'true';
   if (!force && cache.profiles.data && (Date.now() - cache.profiles.timestamp < CACHE_TTL)) {
     return res.json({ success: true, cached: true, profiles: cache.profiles.data });
@@ -67,7 +91,7 @@ app.get('/api/profiles', async (req, res) => {
 });
 
 // GET /api/profiles/:name - Details for specific profile
-app.get('/api/profiles/:name', async (req, res) => {
+app.get('/api/profiles/:name', requireLocalToken, async (req, res) => {
   try {
     const details = await getProfileDetails(req.params.name);
     res.json(details);
@@ -77,7 +101,7 @@ app.get('/api/profiles/:name', async (req, res) => {
 });
 
 // POST /api/profiles/delete - Delete/Forget Wi-Fi profile
-app.post('/api/profiles/delete', async (req, res) => {
+app.post('/api/profiles/delete', requireLocalToken, async (req, res) => {
   const { name } = req.body;
   if (!name) return res.status(400).json({ success: false, message: 'Profile name is required' });
 
@@ -149,7 +173,7 @@ app.get('/api/ping', async (req, res) => {
 });
 
 // GET /api/export - Export all profiles & audit report as JSON
-app.get('/api/export', async (req, res) => {
+app.get('/api/export', requireLocalToken, async (req, res) => {
   try {
     const profiles = await getAllSavedProfilesDetails();
     const active = await getActiveInterface();
@@ -179,7 +203,7 @@ app.get('/api/export', async (req, res) => {
 });
 
 // GET /api/export/csv - Export saved profiles as CSV file
-app.get('/api/export/csv', async (req, res) => {
+app.get('/api/export/csv', requireLocalToken, async (req, res) => {
   try {
     const profiles = await getAllSavedProfilesDetails();
     const csvData = exportProfilesToCSV(profiles);
@@ -190,6 +214,16 @@ app.get('/api/export/csv', async (req, res) => {
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
+});
+
+// Socket.io connections also touch saved passwords (run-full-scan), so they
+// require the same local token, passed via the connection handshake auth.
+io.use((socket, next) => {
+  const token = socket.handshake.auth && socket.handshake.auth.token;
+  if (!token || token !== AUTH_TOKEN) {
+    return next(new Error('Unauthorized: missing or invalid token'));
+  }
+  next();
 });
 
 // Real-time Socket.io connections & terminal logging
@@ -261,9 +295,14 @@ app.use((req, res) => {
   res.sendFile(path.join(__dirname, '../client/dist/index.html'));
 });
 
-server.listen(PORT, () => {
+// Bind to loopback only: this server exposes plaintext Wi-Fi passwords and
+// must never be reachable from other machines on the network.
+server.listen(PORT, '127.0.0.1', () => {
   console.log(`====================================================`);
   console.log(` 📶 FiWi V2 Server running on http://localhost:${PORT}`);
+  console.log(` 🔑 Local access token (send as X-DatHex-Token header):`);
+  console.log(`    ${AUTH_TOKEN}`);
+  console.log(`    (also written to server/.local-token)`);
   console.log(`====================================================`);
 });
 
