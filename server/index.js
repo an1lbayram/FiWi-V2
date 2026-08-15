@@ -295,30 +295,38 @@ app.use((req, res) => {
   res.sendFile(path.join(__dirname, '../client/dist/index.html'));
 });
 
-// Bind to loopback only: this server exposes plaintext Wi-Fi passwords and
-// must never be reachable from other machines on the network.
-server.listen(PORT, '127.0.0.1', () => {
-  console.log(`====================================================`);
-  console.log(` 📶 FiWi V2 Server running on http://localhost:${PORT}`);
-  console.log(` 🔑 Local access token (send as X-DatHex-Token header):`);
-  console.log(`    ${AUTH_TOKEN}`);
-  console.log(`    (also written to server/.local-token)`);
-  console.log(`====================================================`);
-});
+// Only bind the port / start the cron job when this file is run directly
+// (`node server/index.js`), not when it's `require()`d by tests — this lets
+// tests import `app` with supertest without opening a real socket or
+// scheduling background jobs.
+if (require.main === module) {
+  // Bind to loopback only: this server exposes plaintext Wi-Fi passwords and
+  // must never be reachable from other machines on the network.
+  server.listen(PORT, '127.0.0.1', () => {
+    console.log(`====================================================`);
+    console.log(` 📶 FiWi V2 Server running on http://localhost:${PORT}`);
+    console.log(` 🔑 Local access token (send as X-DatHex-Token header):`);
+    console.log(`    ${AUTH_TOKEN}`);
+    console.log(`    (also written to server/.local-token)`);
+    console.log(`====================================================`);
+  });
 
-// Background Cron Job for Wi-Fi Security & Status Check (Runs every 1 hour)
-cron.schedule('0 * * * *', async () => {
-  console.log('[Background Audit] Checking Wi-Fi security...');
-  try {
-    const audit = await runSecurityAudit();
-    if (audit.issues.length > 0) {
-      notifier.notify({
-        title: 'FiWi V2 - Security Alert',
-        message: `Found ${audit.issues.length} potential security issues on your saved Wi-Fi networks!`,
-        appID: 'FiWi V2'
-      });
+  // Background Cron Job for Wi-Fi Security & Status Check (Runs every 1 hour)
+  cron.schedule('0 * * * *', async () => {
+    console.log('[Background Audit] Checking Wi-Fi security...');
+    try {
+      const audit = await runSecurityAudit();
+      if (audit.issues.length > 0) {
+        notifier.notify({
+          title: 'FiWi V2 - Security Alert',
+          message: `Found ${audit.issues.length} potential security issues on your saved Wi-Fi networks!`,
+          appID: 'FiWi V2'
+        });
+      }
+    } catch (e) {
+      // Silent catch
     }
-  } catch (e) {
-    // Silent catch
-  }
-});
+  });
+}
+
+module.exports = { app, server, io, AUTH_TOKEN, ALLOWED_ORIGIN };

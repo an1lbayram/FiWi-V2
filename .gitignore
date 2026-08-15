@@ -6,3 +6,11 @@ server/node_modules/
 *.log
 .env
 server/.local-token
+
+# Test/CI tool output (not source, regenerated on every run)
+coverage/
+server/coverage/
+client/coverage/
+playwright-report/
+test-results/
+.lighthouseci/

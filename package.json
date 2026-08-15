@@ -4,6 +4,14 @@
   "private": true,
   "scripts": {
     "build": "cd client && npm install && npm run build",
-    "server": "node server/index.js"
+    "server": "node server/index.js",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:lighthouse": "lhci autorun"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.10.1",
+    "@lhci/cli": "^0.15.1",
+    "@playwright/test": "^1.49.1"
   }
 }

@@ -182,7 +182,7 @@ export default function PasswordsTab({ profiles, onDeleteProfile, onOpenQR }) {
               {t('confirmDeleteTitle')}
             </h3>
             <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', marginBottom: '20px', lineHeight: '1.5', wordBreak: 'break-word' }}>
-              <strong>"{deleteTarget.ssid || deleteTarget.name}"</strong> {t('confirmDeleteBody')}
+              <strong>&quot;{deleteTarget.ssid || deleteTarget.name}&quot;</strong> {t('confirmDeleteBody')}
             </p>
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
               <button className="btn-secondary" onClick={() => setDeleteTarget(null)}>
